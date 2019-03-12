@@ -23,15 +23,14 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.Sockets.Http.Features;
 using Newtonsoft.Json;
 using Realmius.Contracts;
 using Realmius.Contracts.Models;
 using Realmius.Contracts.SignalR;
-using Realmius.Server.Infrastructure;
 using Realmius.Server.Models;
 using Realmius.Server.QuickStart;
 using Realmius.Contracts.Logger;
+using Microsoft.AspNetCore.Http.Connections.Features;
 
 namespace Realmius.Server.Exchange
 {
@@ -178,7 +177,7 @@ namespace Realmius.Server.Exchange
             }
             Connections[connectionId] = user;
 
-            var httpContextFeature = Context.Connection.Features.Get<IHttpContextFeature>();
+            var httpContextFeature = Context.Features.Get<IHttpContextFeature>();
             var httpQuery = httpContextFeature.HttpContext.Request.Query;
 
             var lastDownloadString = (string) httpQuery[Constants.LastDownloadParameterName];
@@ -213,7 +212,7 @@ namespace Realmius.Server.Exchange
 
             foreach (var userTag in userTags)
             {
-                await Groups.AddAsync(connectionId, userTag);
+                await Groups.AddToGroupAsync(connectionId, userTag);
             }
         }
 

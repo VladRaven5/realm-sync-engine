@@ -18,18 +18,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.AspNetCore.SignalR.Internal.Protocol;
-using Microsoft.AspNetCore.Sockets.Client;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Realmius.Contracts;
 using Realmius.Contracts.Models;
@@ -207,9 +200,10 @@ namespace Realmius.SyncService.ApiClient
             OnConnectedStateChanged();
         }
 
-        private void _hubConnection_Closed(Exception obj)
+        private async Task _hubConnection_Closed(Exception obj)
         {
             Logger.Info("Connection closed, will start reconnecting...");
+            //TODO: await?
             Reconnect();
         }
 
