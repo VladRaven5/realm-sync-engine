@@ -63,10 +63,10 @@ namespace Realmius
         private static void ForAllServices(Realm realm, Action<RealmiusSyncService> action)
         {
             var databasePath = realm.Config.DatabasePath;
-            IList<RealmiusSyncService> syncServices;
             lock (SyncServiceFactory.SyncServices)
             {
-                if (SyncServiceFactory.SyncServices.TryGetValue(databasePath, out syncServices))
+                if (SyncServiceFactory.SyncServices.TryGetValue(databasePath,
+                    out IList<RealmiusSyncService> syncServices))
                 {
                     foreach (RealmiusSyncService syncService in syncServices.ToList())
                     {

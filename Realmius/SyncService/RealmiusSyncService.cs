@@ -115,8 +115,9 @@ namespace Realmius.SyncService
             }
             var realm = realmFactoryMethod();
             _realmDatabasePath = realm.Config.DatabasePath;
-            IList<RealmiusSyncService> syncServices;
-            if (!SyncServiceFactory.SyncServices.TryGetValue(_realmDatabasePath, out syncServices))
+            
+            if (!SyncServiceFactory.SyncServices.TryGetValue(_realmDatabasePath,
+                out IList<RealmiusSyncService> syncServices))
             {
                 syncServices = new List<RealmiusSyncService>();
                 SyncServiceFactory.SyncServices[realm.Config.DatabasePath] = syncServices;
@@ -345,7 +346,7 @@ namespace Realmius.SyncService
             return JsonConvert.SerializeObject(obj, _jsonSerializerSettings);
         }
 
-        private object _objectChangedLock = new object();
+        private readonly object _objectChangedLock = new object();
         private bool _skipObjectChanges = false;
         internal virtual void ObjectChanged(IRealmCollection<RealmObject> sender, ChangeSet changes, Exception error) //internal for Tests
         {
@@ -473,8 +474,7 @@ namespace Realmius.SyncService
 
         private void SetSyncState(Realm realm, IRealmiusObjectClient obj, SyncState syncState)
         {
-            var objWithSyncState = obj as IRealmiusObjectWithSyncStatusClient;
-            if (objWithSyncState != null)
+            if (obj is IRealmiusObjectWithSyncStatusClient objWithSyncState)
             {
                 realm.Write(() =>
                 {
@@ -600,7 +600,7 @@ namespace Realmius.SyncService
         }
 
         private bool _uploadInProgress;
-        private object _uploadLock = new object();
+        private readonly object _uploadLock = new object();
         private bool _disposed;
         public virtual async Task Upload()
         {
@@ -1117,8 +1117,8 @@ namespace Realmius.SyncService
 
             lock (SyncServiceFactory.SyncServices)
             {
-                IList<RealmiusSyncService> syncServices;
-                if (SyncServiceFactory.SyncServices.TryGetValue(_realmDatabasePath, out syncServices))
+                if (SyncServiceFactory.SyncServices.TryGetValue(
+                    _realmDatabasePath, out IList<RealmiusSyncService> syncServices))
                 {
                     syncServices.Remove(this);
                 }
